@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Bahnzeit</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e4f1f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c2a31" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bahnzeit">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#e4f1f2;--sf:#fbfefe;--sf2:#d3e8ea;--tx:#0c3640;--mu:#4a6d75;--ln:#c3dde0;--ac:#087f9c;--ai:#fff;--r1:#1fb8d3;--r2:#08809f;--ri:#fff;--hot:#d23d27;--hi:#fff;--num:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;--ui:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c2a31;--sf:#133a44;--sf2:#1b4a56;--tx:#e3f3f4;--mu:#92b9c0;--ln:#245764;--ac:#3fd0e0;--ai:#05252b;--r1:#3fd0e0;--r2:#1ba5ba;--ri:#04232a;--hot:#ff8670;--hi:#2a0d08}}
+:root[data-theme="dark"]{--bg:#0c2a31;--sf:#133a44;--sf2:#1b4a56;--tx:#e3f3f4;--mu:#92b9c0;--ln:#245764;--ac:#3fd0e0;--ai:#05252b;--r1:#3fd0e0;--r2:#1ba5ba;--ri:#04232a;--hot:#ff8670;--hi:#2a0d08}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:500 16px/1.35 var(--ui);padding-bottom:120px;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input{font:inherit;color:inherit}
+button{border:0;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:11;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 10px;max-width:720px;margin:0 auto}
+h1{margin:0;font:700 34px/1 var(--num);letter-spacing:.01em}
+h2{margin:0;font:600 22px/1.1 var(--num)}
+.sub{margin:3px 0 0;color:var(--mu);font-size:14px}
+main{max-width:720px;margin:0 auto;padding:4px 16px}
+.panel{background:var(--sf);border-radius:22px;padding:16px;margin:0 0 14px}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.lnk{background:none;color:var(--ac);font-weight:600;padding:8px 10px;min-height:40px}
+.two{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end}
+.lbl{display:block;color:var(--mu);font-size:14px;margin-bottom:6px}
+.stepper,.dist{display:flex;align-items:center;gap:8px}
+.rnd{width:48px;height:48px;border-radius:50%;background:var(--sf2);font:600 26px/1 var(--num)}
+.val{min-width:52px;text-align:center;font:700 48px/1 var(--num)}
+input{background:var(--sf2);border:2px solid transparent;border-radius:14px;min-height:48px;padding:0 14px;min-width:0}
+input:focus{border-color:var(--ac);outline:0}
+.dist input{width:92px;text-align:center;font:700 40px/1 var(--num);padding:0}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.chip{position:relative;min-height:54px;padding:8px 44px 8px 14px;border-radius:16px;background:var(--sf);border:2px solid var(--ln);text-align:left;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip.on{border-color:var(--ac);background:var(--sf2)}
+.chip .n{position:absolute;right:9px;top:50%;margin-top:-14px;width:28px;height:28px;border-radius:50%;background:var(--ac);color:var(--ai);font:700 17px/28px var(--num);text-align:center}
+.chip .n.del{background:var(--hot);color:var(--hi)}
+.add{display:flex;gap:8px;margin-top:12px}.add input{flex:1}
+.note{margin:12px 0 0;color:var(--mu);font-size:14px}
+.btn{min-height:54px;padding:0 20px;border-radius:16px;font-weight:600;background:var(--sf2)}
+.btn.pri{background:var(--ac);color:var(--ai)}
+.btn:disabled{opacity:.45}
+.btn small{display:block;font-weight:500;font-size:13px;opacity:.85}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:12;background:var(--bg);display:flex;justify-content:center;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.bar .grow{flex:1;max-width:560px}
+.seg{display:flex;background:var(--sf2);border-radius:14px;padding:3px}
+.seg button{background:none;min-height:40px;padding:0 16px;border-radius:11px;font-weight:600}
+.seg .on{background:var(--sf)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.card{position:relative;background:var(--sf);border-radius:24px;padding:14px 16px 16px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform .08s}
+.card:active{transform:scale(.985)}
+.card.run{background:linear-gradient(145deg,var(--r1),var(--r2));color:var(--ri)}
+.card.done{opacity:.7}
+.top{display:flex;align-items:center;gap:10px}
+.pos{flex:none;width:30px;height:30px;border-radius:50%;background:var(--sf2);font:700 18px/30px var(--num);text-align:center}
+.card.run .pos,.card.run .undo{background:rgba(255,255,255,.28)}
+.nm{min-width:0;font:600 22px/1.1 var(--num);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rep{margin-left:auto;flex:none;font:600 20px var(--num);opacity:.8}
+.undo{flex:none;width:40px;height:40px;border-radius:50%;background:var(--sf2);font-size:20px;line-height:1}
+.time{font:600 68px/1 var(--num);font-variant-numeric:tabular-nums;margin:8px 0 2px}
+.card.fresh .time{color:var(--mu)}
+.hint{font-size:14px;color:var(--mu)}
+.card.run .hint,.card.run .stats span{color:inherit;opacity:.9}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stats b{display:block;font:600 22px/1.1 var(--num);font-variant-numeric:tabular-nums}
+.stats span{font-size:13px;color:var(--mu)}
+.prog{display:flex;gap:3px;height:8px}
+.prog i{flex:1;border-radius:3px;background:var(--sf2)}
+.prog i.f{background:var(--ac)}
+.card.run .prog i{background:rgba(255,255,255,.3)}
+.card.run .prog i.f{background:var(--ri)}
+.res{background:var(--sf);border-radius:22px;padding:14px 16px;margin:0 0 12px}
+.rh{display:flex;align-items:center;gap:10px}
+.avg{margin-left:auto;font:700 34px/1 var(--num);font-variant-numeric:tabular-nums}
+.avg small{font:500 16px var(--ui);color:var(--mu);margin-right:4px}
+.splits{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.splits span{background:var(--sf2);border-radius:10px;padding:5px 2px;text-align:center;font:600 17px/1.2 var(--num);font-variant-numeric:tabular-nums}
+.splits small{display:block;font:500 11px var(--ui);color:var(--mu)}
+.splits .best{background:var(--hot);color:var(--hi)}
+.splits .best small{color:var(--hi);opacity:.85}
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:90%;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;text-align:center}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+.lage{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.lg{min-height:42px;padding:0 14px;border-radius:12px;background:var(--sf2);font-weight:600;border:2px solid transparent}
+.lg.on{border-color:var(--ac);background:var(--sf)}
+.ivl{display:block;margin-top:14px}.ivl input{width:100%}
+textarea{display:block;width:100%;margin-top:10px;background:var(--sf2);border:2px solid transparent;border-radius:14px;padding:10px 14px;font:inherit;color:inherit;resize:vertical}
+textarea:focus{border-color:var(--ac);outline:0}
+.card.due{box-shadow:inset 0 0 0 3px var(--hot)}
+.card.due .hint{color:var(--hot);font-weight:600}
+.dl{margin:6px 0 0;font-size:14px;font-weight:600}
+.dl.f{color:var(--ac)}.dl.s{color:var(--hot)}.dl.m{color:var(--mu);font-weight:500}
+.hl{display:grid;gap:8px;margin-bottom:14px}
+.hi{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--sf);border-radius:18px;padding:12px 14px;cursor:pointer}
+.hi div{min-width:0}.hi b{display:block;font:600 20px var(--num)}
+.hi span{display:block;color:var(--mu);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .btn{padding:0 12px}
+</style>
+</head>
+<body>
+<header id="head"></header>
+<main id="app"></main>
+<div class="bar" id="bar"></div>
+<div id="toast" role="status"></div>
+<script>
+(function(){
+const KEY='bahnzeit-v1';
+let S={roster:[],order:[],reps:16,dist:'100',session:null,hist:[],lage:'Kraul',intv:0},hid=null,armH=null,view='setup',tab='live',edit=false,endArm=false,endT=null,wl=null,tt=null;
+try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);if(o&&typeof o==='object')Object.assign(S,o);}}catch(e){}
+if(S.session)view='session';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const buzz=n=>{try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}};
+const sel=()=>S.order.filter(id=>S.roster.some(r=>r.id===id));
+const LAGEN=['Kraul','Rücken','Brust','Delfin','Lagen'];
+const mmss=r=>Math.floor(r/60)+':'+String(r%60).padStart(2,'0');
+const fdate=t=>new Date(t||Date.now()).toLocaleString('de',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const hs=(n,s)=>S.hist.filter(h=>h.dist===s.dist&&(h.lage||'Kraul')===(s.lage||'Kraul')&&h.ts<(s.ts||1e15)).map(h=>h.sw.find(x=>x.name===n)).filter(Boolean);
+const pb=(n,s)=>{const a=[].concat(...hs(n,s).map(x=>x.splits));return a.length?Math.min(...a):null;};
+const prevAvg=(n,s)=>{const a=hs(n,s).filter(x=>x.splits.length);return a.length?avg(a[a.length-1].splits):null;};
+function hintOf(w,s){
+ const k=w.splits.length;if(w.start!=null)return'Tippen bei Anschlag';if(k>=s.reps)return'Fertig ✓';
+ let t=k?'Tippen für nächste Wiederholung':'Tippen zum Start';
+ if(k&&s.intv&&w.ls){const r=Math.ceil((w.ls+s.intv*1000-Date.now())/1000);t=r>0?'Abgang in '+mmss(r):'Jetzt starten!';}
+ const p=pb(w.name,s);return t+(p?' (Rekord '+fmt(p,true)+')':'');
+}
+function dl(w,s){
+ const k=w.splits.length;if(!k)return'';const sec=t=>(t/1000).toFixed(2).replace('.',',');let o='';const p=prevAvg(w.name,s);
+ if(p!=null){const d=avg(w.splits)-p;o+='<p class="dl '+(d<0?'f':'s')+'">'+(d<0?'−':'+')+sec(Math.abs(d))+' s zur letzten Serie</p>';}
+ if(k>1)o+='<p class="dl m">Streuung '+sec(Math.max(...w.splits)-Math.min(...w.splits))+' s</p>';return o;
+}
+function tsv(s){
+ s=s||S.session;const sec=t=>(t/1000).toFixed(2).replace('.',','),m=Math.max(0,...s.sw.map(w=>w.splits.length));
+ return ['Name','Ø','Beste'].concat(Array.from({length:m},(_,i)=>i+1)).join('\t')+'\n'+s.sw.map(w=>[w.name,w.splits.length?sec(avg(w.splits)):'',w.splits.length?sec(Math.min(...w.splits)):''].concat(w.splits.map(sec)).join('\t')).join('\n');
+}
+function cp(t){try{navigator.clipboard.writeText(t).then(()=>toast('Kopiert'),()=>toast('Kopieren nicht möglich'));}catch(x){toast('Kopieren nicht möglich');}}
+function renderHist(h,a,b){
+ const e=hid!=null?S.hist.find(x=>x.ts===hid):null;
+ if(e){
+  h.innerHTML=`<div><h1>${esc(e.reps)} × ${esc(e.dist)} m</h1><p class="sub">${esc(e.lage||'Kraul')}, ${fdate(e.ts)}</p></div>`;
+  a.innerHTML=results(e);
+  b.innerHTML='<button class="btn" data-act="back">Zurück</button><button class="btn grow" data-act="hcopy">Als Text</button><button class="btn pri grow" data-act="hcopyx">Für Excel</button>';
+  return;
+ }
+ h.innerHTML=`<div><h1>Verlauf</h1><p class="sub">${S.hist.length} Serien gespeichert</p></div>`;
+ a.innerHTML=(S.hist.length?'<div class="hl">'+S.hist.slice().reverse().map(x=>{const arm=armH===String(x.ts);return `<div class="hi" data-act="open" data-id="${x.ts}"><div><b>${esc(x.reps)} × ${esc(x.dist)} m, ${esc(x.lage||'Kraul')}</b><span>${fdate(x.ts)}, ${x.sw.map(w=>esc(w.name)).join(', ')}</span></div><button class="undo" data-act="delh" data-id="${x.ts}" aria-label="Löschen"${arm?' style="width:auto;padding:0 12px;background:var(--hot);color:var(--hi)"':''}>${arm?'Löschen?':'×'}</button></div>`;}).join('')+'</div>':'<p class="note">Noch keine Serien. Wenn du eine Serie beendest, erscheint sie hier.</p>')+
+ `<section class="panel"><h2>Sicherung</h2><p class="note">Kopiere deine Daten als Sicherung oder füge eine Sicherung von einem anderen Gerät ein.</p><div class="add"><button class="btn grow" data-act="bk">Sicherung kopieren</button></div><textarea id="imp" rows="3" placeholder="Sicherung hier einfügen"></textarea><div class="add"><button class="btn pri grow" data-act="rs">Einfügen und übernehmen</button></div></section>`;
+ b.innerHTML='<button class="btn pri grow" data-act="back">Zurück</button>';
+}
+function fmt(ms,h){if(ms==null||isNaN(ms))return'–';const cs=Math.floor(ms/10),m=Math.floor(cs/6000),s=Math.floor(cs%6000/100),c=cs%100;return m+':'+String(s).padStart(2,'0')+'.'+(h?String(c).padStart(2,'0'):Math.floor(c/10));}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1900);}
+async function lock(){try{if(S.session&&'wakeLock' in navigator&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null});}}catch(e){}}
+function unlock(){try{wl&&wl.release()}catch(e){}wl=null;}
+
+function setupLabel(){const s=$('#go small');if(s)s.textContent=S.reps+' × '+(S.dist||'–')+' m, '+sel().length+' Schwimmer';}
+function renderSetup(h,a,b){
+ const ids=sel();
+ h.innerHTML='<div><h1>Bahnzeit</h1><p class="sub">Serienzeiten für Schwimmtrainer</p></div><button class="lnk" data-act="hist">Verlauf</button>';
+ const chips=S.roster.length?'<div class="chips">'+S.roster.map(r=>{const i=ids.indexOf(r.id);return `<button class="chip${i>=0?' on':''}" data-act="${edit?'del':'tog'}" data-id="${r.id}">${esc(r.name)}${edit?'<span class="n del">×</span>':i>=0?`<span class="n">${i+1}</span>`:''}</button>`}).join('')+'</div>':'<p class="note" style="margin:0">Noch keine Schwimmer. Trag unten Namen ein, sie bleiben auf diesem Gerät gespeichert.</p>';
+ a.innerHTML=`<section class="panel"><div class="ph"><h2>Serie</h2></div>
+ <div class="two"><div><span class="lbl">Wiederholungen</span><div class="stepper"><button class="rnd" data-act="reps" data-d="-1" aria-label="Weniger">−</button><div class="val" id="reps">${S.reps}</div><button class="rnd" data-act="reps" data-d="1" aria-label="Mehr">+</button></div></div>
+ <label><span class="lbl">Distanz in m</span><span class="dist"><input id="dist" inputmode="numeric" maxlength="5" value="${esc(S.dist)}"></span></label></div>
+ <div class="lage">${LAGEN.map(l=>`<button class="lg${S.lage===l?' on':''}" data-act="lage" data-v="${l}">${l}</button>`).join('')}</div>
+ <label class="ivl"><span class="lbl">Abgangsintervall in Sekunden (optional, zeigt die Pause)</span><input id="intv" inputmode="numeric" maxlength="3" placeholder="z. B. 90 für 1:30" value="${S.intv||''}"></label></section>
+ <section class="panel"><div class="ph"><h2>Schwimmer</h2><div><button class="lnk" data-act="all">Alle</button><button class="lnk" data-act="none">Keine</button><button class="lnk" data-act="edit">${edit?'Fertig':'Bearbeiten'}</button></div></div>
+ ${chips}
+ <div class="add"><input id="newname" placeholder="Name hinzufügen" autocomplete="off" enterkeyhint="done" maxlength="24"><button class="btn pri" data-act="add" aria-label="Hinzufügen">+</button></div>
+ ${edit?'<p class="note">Tippe auf einen Namen, um ihn zu löschen.</p>':ids.length>1?'<p class="note">Die Zahl am Namen ist die Reihenfolge in der Serie. Zum Ändern abwählen und neu antippen.</p>':''}</section>`;
+ b.innerHTML=`<button class="btn pri grow" id="go" data-act="start" ${ids.length?'':'disabled'}>Serie starten<small></small></button>`;
+ setupLabel();
+}
+function card(w,i){
+ const s=S.session,k=w.splits.length,run=w.start!=null,done=!run&&k>=s.reps;
+ const last=k?w.splits[k-1]:null,best=k?Math.min(...w.splits):null,av=k?avg(w.splits):null;
+ const hint=hintOf(w,s);
+ let segs='';for(let j=0;j<s.reps;j++)segs+='<i'+(j<k?' class="f"':'')+'></i>';
+ return `<div class="card ${run?'run':done?'done':'idle'}${k?'':' fresh'}" data-act="tap" data-id="${w.id}" role="button">
+ <div class="top"><span class="pos">${i+1}</span><span class="nm">${esc(w.name)}</span><span class="rep">${k}/${s.reps}</span><button class="undo" data-act="undo" data-id="${w.id}" aria-label="Rückgängig" style="${run||k?'':'visibility:hidden'}">↺</button></div>
+ <div class="time" data-t="${w.id}">${run?fmt(Date.now()-w.start):fmt(last||0,true)}</div>
+ <div class="hint" data-h="${w.id}">${hint}</div>
+ <div class="stats"><div><b>${fmt(last,true)}</b><span>Letzte</span></div><div><b>${fmt(av,true)}</b><span>Ø</span></div><div><b>${fmt(best,true)}</b><span>Beste</span></div></div>
+ <div class="prog">${segs}</div></div>`;
+}
+function results(s){
+ const rows=s.sw.map(w=>({w,av:w.splits.length?avg(w.splits):Infinity})).sort((x,y)=>x.av-y.av);
+ return rows.map(({w,av},i)=>{const k=w.splits.length,best=k?Math.min(...w.splits):0;
+  return `<section class="res"><div class="rh"><span class="pos">${k?i+1:'–'}</span><span class="nm">${esc(w.name)}</span><span class="avg"><small>Ø</small>${k?fmt(av,true):'–'}</span></div>${dl(w,s)}`+(k?`<div class="splits">${w.splits.map((t,j)=>`<span class="${t===best?'best':''}"><small>${j+1}</small>${fmt(t,true)}</span>`).join('')}</div>`:'<p class="note">Noch keine Zeiten.</p>')+'</section>';}).join('');
+}
+function renderSession(h,a,b){
+ const s=S.session;
+ h.innerHTML=`<div><h1>${s.reps} × ${esc(s.dist)} m</h1><p class="sub">${esc(s.lage||'Kraul')}${s.intv?', Abgang '+mmss(s.intv):''}, ${s.sw.length} Schwimmer</p></div><div class="seg"><button class="${tab==='live'?'on':''}" data-act="tab" data-v="live">Live</button><button class="${tab==='res'?'on':''}" data-act="tab" data-v="res">Zeiten</button></div>`;
+ a.innerHTML=tab==='live'?'<div class="grid">'+s.sw.map(card).join('')+'</div>':results(s);
+ b.innerHTML=`<button class="btn" data-act="end">${endArm?'Wirklich beenden?':'Beenden'}</button>`+(tab==='live'?'<button class="btn pri grow" data-act="allstart">Alle starten</button>':'<button class="btn grow" data-act="copy">Als Text</button><button class="btn pri grow" data-act="copyx">Für Excel</button>');
+}
+function render(){const h=$('#head'),a=$('#app'),b=$('#bar');if(view==='hist')renderHist(h,a,b);else if(view==='session'&&S.session)renderSession(h,a,b);else{view='setup';renderSetup(h,a,b);}}
+function tick(){if(view!=='session'||tab!=='live'||!S.session)return;const n=Date.now();S.session.sw.forEach(w=>{if(w.start!=null){const e=document.querySelector('[data-t="'+w.id+'"]');if(e)e.textContent=fmt(n-w.start);}else if(S.session.intv&&w.ls&&w.splits.length<S.session.reps){const h=document.querySelector('[data-h="'+w.id+'"]');if(h){const x=hintOf(w,S.session),due=n>=w.ls+S.session.intv*1000;if(h.textContent!==x)h.textContent=x;h.parentElement.classList.toggle('due',due);if(due&&!w.al){w.al=1;buzz([120,80,120]);}}}});}
+function txt(s){s=s||S.session;return fdate(s.ts)+', '+s.reps+'×'+s.dist+' m, '+(s.lage||'Kraul')+'\n'+s.sw.map(w=>w.name+': '+(w.splits.length?'Ø '+fmt(avg(w.splits),true)+' | '+w.splits.map(t=>fmt(t,true)).join(', '):'–')).join('\n');}
+function addName(){
+ const i=$('#newname'),n=(i.value||'').trim().slice(0,24);if(!n)return;
+ if(S.roster.some(r=>r.name.toLowerCase()===n.toLowerCase())){toast('Diesen Namen gibt es schon');return;}
+ const r={id:uid(),name:n};S.roster.push(r);S.order.push(r.id);save();render();$('#newname').focus();
+}
+function tap(id){
+ const s=S.session,w=s.sw.find(x=>x.id===id);if(!w)return;const n=Date.now();
+ if(w.start!=null){if(n-w.start<700){toast('Zu schnell getippt, ignoriert');return;}const t=n-w.start,p=pb(w.name,s);w.splits.push(t);w.start=null;buzz(35);if(p&&t<p)toast('Neue Bestzeit: '+w.name+' '+fmt(t,true));}
+ else if(w.splits.length<s.reps){w.start=w.ls=n;w.al=0;buzz(15);}
+ else return;
+ save();render();
+}
+document.addEventListener('click',e=>{
+ const t=e.target.closest('[data-act]');if(!t)return;
+ const act=t.dataset.act,id=t.dataset.id,s=S.session;
+ if(act==='lage'){S.lage=t.dataset.v;save();render();}
+ else if(act==='hist'){view='hist';hid=null;render();window.scrollTo(0,0);}
+ else if(act==='back'){if(hid!=null)hid=null;else view='setup';render();window.scrollTo(0,0);}
+ else if(act==='open'){hid=+id;render();window.scrollTo(0,0);}
+ else if(act==='delh'){if(armH===id){S.hist=S.hist.filter(x=>String(x.ts)!==id);armH=null;save();}else{armH=id;toast('Nochmal tippen zum Löschen');setTimeout(()=>{armH=null;render();},3000);}render();}
+ else if(act==='hcopy')cp(txt(S.hist.find(x=>x.ts===hid)));
+ else if(act==='hcopyx')cp(tsv(S.hist.find(x=>x.ts===hid)));
+ else if(act==='copyx')cp(tsv());
+ else if(act==='bk')cp(JSON.stringify({roster:S.roster,hist:S.hist}));
+ else if(act==='rs'){try{const o=JSON.parse($('#imp').value);if(!Array.isArray(o.roster)||!Array.isArray(o.hist))throw 0;o.roster.forEach(r=>{if(r&&r.name&&!S.roster.some(x=>x.name===r.name))S.roster.push({id:uid(),name:String(r.name).slice(0,24)});});o.hist.forEach(x=>{if(x&&x.ts&&Array.isArray(x.sw)&&x.sw.every(w=>w&&Array.isArray(w.splits))&&!S.hist.some(y=>y.ts===x.ts))S.hist.push(x);});S.hist.sort((p,q)=>p.ts-q.ts);save();render();toast('Sicherung übernommen');}catch(x){toast('Das ist keine gültige Sicherung');}}
+ else if(act==='reps'){S.reps=Math.max(1,Math.min(99,S.reps+Number(t.dataset.d)));$('#reps').textContent=S.reps;save();setupLabel();}
+ else if(act==='tog'){const i=S.order.indexOf(id);if(i>=0)S.order.splice(i,1);else S.order.push(id);save();render();}
+ else if(act==='del'){S.roster=S.roster.filter(r=>r.id!==id);S.order=S.order.filter(x=>x!==id);save();render();}
+ else if(act==='edit'){edit=!edit;render();}
+ else if(act==='all'){S.order=S.roster.map(r=>r.id);save();render();}
+ else if(act==='none'){S.order=[];save();render();}
+ else if(act==='add')addName();
+ else if(act==='start'){
+  const ids=sel();if(!ids.length)return;
+  S.session={ts:Date.now(),lage:S.lage,intv:S.intv,reps:S.reps,dist:S.dist||'–',sw:ids.map(i=>({id:i,name:S.roster.find(r=>r.id===i).name,splits:[],start:null}))};
+  view='session';tab='live';edit=false;save();lock();render();window.scrollTo(0,0);
+ }
+ else if(act==='tap')tap(id);
+ else if(act==='undo'){const w=s.sw.find(x=>x.id===id);if(w){if(w.start!=null)w.start=null;else w.splits.pop();save();render();}}
+ else if(act==='tab'){tab=t.dataset.v;render();window.scrollTo(0,0);}
+ else if(act==='allstart'){const n=Date.now();s.sw.forEach(w=>{if(w.start==null&&w.splits.length<s.reps){w.start=w.ls=n;w.al=0;}});buzz(15);save();render();}
+ else if(act==='end'){
+  if(!endArm){endArm=true;render();toast('Nochmal tippen: Serie beenden und im Verlauf speichern.');clearTimeout(endT);endT=setTimeout(()=>{endArm=false;render();},3500);}
+  else{clearTimeout(endT);endArm=false;const sv=s.sw.some(w=>w.splits.length);if(sv){s.sw.forEach(w=>w.start=null);s.ts=s.ts||Date.now();S.hist=S.hist.concat([s]).slice(-300);}S.session=null;view='setup';unlock();save();render();if(sv)toast('Serie im Verlauf gespeichert');}
+ }
+ else if(act==='copy'){try{navigator.clipboard.writeText(txt()).then(()=>toast('Zeiten kopiert'),()=>toast('Kopieren nicht möglich'));}catch(x){toast('Kopieren nicht möglich');}}
+});
+document.addEventListener('input',e=>{if(e.target.id==='intv'){const v=e.target.value.replace(/[^0-9]/g,'').slice(0,3);if(e.target.value!==v)e.target.value=v;S.intv=+v||0;save();return;}if(e.target.id==='dist'){const v=e.target.value.replace(/\D/g,'').slice(0,5);if(e.target.value!==v)e.target.value=v;S.dist=v;save();setupLabel();}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='newname'){e.preventDefault();addName();}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){lock();render();}});
+render();lock();setInterval(tick,80);
+})();
+</script>
+<script>
+if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+</script>
+</body>
+</html>

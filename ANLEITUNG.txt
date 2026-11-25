@@ -1,0 +1,11 @@
+Bahnzeit als App installieren
+
+1. Alle Dateien dieses Ordners zusammen auf einen Hoster hochladen, der https:// nutzt
+   (z. B. Netlify Drop oder GitHub Pages). Nicht nur index.html, sondern alle Dateien.
+2. Die Adresse auf dem Handy öffnen.
+3. iPhone (Safari): Teilen, dann „Zum Home-Bildschirm“.
+   Android (Chrome): Menü, dann „App installieren“ oder „Zum Startbildschirm hinzufügen“.
+
+Nach dem ersten Öffnen läuft die App auch ohne Internet.
+Updates erscheinen beim zweiten Öffnen nach einer Änderung.
+Schwimmerliste und Einstellungen liegen im Speicher der installierten App auf dem Gerät.
